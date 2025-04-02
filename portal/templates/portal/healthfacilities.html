@@ -1,0 +1,76 @@
+{% extends "portal/base.html" %}
+{% block help %} active {% endblock %}
+{% load static %}
+{% block body %}
+
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Reports</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Report</li>
+          <li class="breadcrumb-item active">Health Facilities</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Health Facilities List</h5>
+            <div class="row">
+                <a href="/admin/portal/healthfacilitiestbl/add/"> <button type="button" class="btn btn-success" style="width:18%;margin-left:80%">Add Health Facility + </button></a>
+
+             </div> 
+             <br>
+              <!-- Table with stripped rows -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    
+                    <th>District</th>
+                    <th>Facility Name</th>
+                    <th>no_of_commuities</th>
+                    <th>Name_of incharge</th>
+                    <th>Contact of incharge</th>
+                    <th>Longitude</th>
+                    <th>latitude</th>
+                   
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for aa in hf %}
+                  <tr>
+                    <td>{{aa.district | title}}</td>
+                    <td>{{aa.facility_name| title}}</td>
+                    <td>{{aa.no_of_commuities | title}}</td>
+                    <td>{{aa.name_of_incharge| title}}</td>
+                    <td>{{aa.contact_of_incharge}}</td>
+                    <td>{{aa.longitude}}</td>
+                    <td>{{aa.latitude}}</td>
+              
+                    
+                  </tr>
+                  {% endfor %}
+            
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+
+{% endblock %}

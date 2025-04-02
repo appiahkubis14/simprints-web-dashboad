@@ -1,0 +1,14 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+{% if user.is_superuser %}
+    {{ block.super }}  {# Show original dashboard for superusers #}
+{% else %}
+    <div class="alert alert-info">
+        <h2>Access Restricted</h2>
+        <p>You don't have permission to view this dashboard.</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}{% endblock %}  {# Hide default sidebar #}

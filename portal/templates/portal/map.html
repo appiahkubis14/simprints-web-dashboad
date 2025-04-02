@@ -1,0 +1,158 @@
+{% extends "portal/base.html" %}
+{% block help %} active {% endblock %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<style>
+    #mapdive {
+        width: 100%;
+        height: 93vh;
+        padding: 0.8em !important;
+        position: relative;
+    }
+    #layerAccordion {
+        position: absolute;
+        top: 100px;
+        right: 10px;
+        z-index: 1000; /* Ensure it's on top of the map */
+        width: 18vw;
+    }
+    #main {
+        padding: 10px !important
+    }
+    .card {
+        margin-bottom: 1px!important;
+    }
+
+
+    .polygon-label {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        font-weight: bold;
+        text-shadow: 1px 1px 3px white;
+        color: black !important;
+    }
+</style>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+crossorigin=""></script>
+
+
+<script src="{% static 'portal/assets/js/map.js' %}"></script>
+
+{% endblock %}
+
+{% block body %}
+<main id="main" class="main">
+    <div class="row" id="mapdive">
+        <!-- Map will be rendered here -->
+    </div>
+
+    <div id="layerAccordion" class="accordion">
+        <div class="card">
+            <div class="card-header" id="headingAdminLayers">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseAdminLayers" aria-expanded="true" aria-controls="collapseAdminLayers">
+                        Administrative Layers
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseAdminLayers" class="collapse show" aria-labelledby="headingAdminLayers" data-parent="#layerAccordion">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="region_check" class="admin-switch" value="region" checked>
+                            Region
+                        </label><br>
+
+                        <label>
+                            <input type="checkbox" id="district_check" class="admin-switch" value="district" >
+                            District
+                        </label><br>
+                        
+                        <label>
+                            <input type="checkbox" id="health-facilities" class="admin-switch" value="health-facilities">
+                            Health Facilities
+                        </label><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" id="headingBaseMaps">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseBaseMaps" aria-expanded="false" aria-controls="collapseBaseMaps">
+                        Base Maps
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseBaseMaps" class="collapse" aria-labelledby="headingBaseMaps" data-parent="#layerAccordion">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="osm" class="base-switch" value="osm" checked>
+                            OpenStreetMap
+                        </label><br>
+                        <label>
+                            <input type="checkbox" id="google-satellite" class="base-switch" value="google-satellite">
+                            Google Satellite
+                        </label><br>
+                        <label>
+                            <input type="checkbox" id="topo-map" class="base-switch" value="topo-map">
+                            Topographic Map
+                        </label><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" id="headingReportingLayers">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseReportingLayers" aria-expanded="false" aria-controls="collapseReportingLayers">
+                        Reporting Layers
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseReportingLayers" class="collapse" aria-labelledby="headingReportingLayers" data-parent="#layerAccordion">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="report-layer1" class="report-switch" value="report-layer1" checked>
+                            Report Layer 1
+                        </label><br>
+                        <label>
+                            <input type="checkbox" id="report-layer2" class="report-switch" value="report-layer2">
+                            Report Layer 2
+                        </label><br>
+                        <label>
+                            <input type="checkbox" id="report-layer3" class="report-switch" value="report-layer3">
+                            Report Layer 3
+                        </label><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main><!-- End #main -->
+
+{% block js %}
+
+   
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+    
+{% endblock %}
+{% endblock %}
