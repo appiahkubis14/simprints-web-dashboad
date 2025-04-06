@@ -82,11 +82,11 @@ admin.site.register(healthWorkersTbl, healthWorkersTblAdmin)
 class cwcScheduleTblResource(resources.ModelResource):
     class Meta:
         model = cwcScheduleTbl
-        fields =('id','healthFacilitiesTbl_foreignkey','hw_name','designation','hw_contact')
+        fields =('id','healthFacilitiesTbl_foreignkey','cwc_category','cwc_type','date')
 class cwcScheduleTblAdmin(ImportExportModelAdmin):
     resource_class = cwcScheduleTblResource
-    list_display = ('id','healthFacilitiesTbl_foreignkey','cwc_type','date',)
-    search_fields = ['healthFacilitiesTbl_foreignkey__facility_name','hw_name','hw_contact','designation']
+    list_display = ('id','healthFacilitiesTbl_foreignkey','cwc_category','cwc_type','date')
+    search_fields = ['healthFacilitiesTbl_foreignkey__facility_name','cwc_category','cwc_type']
 admin.site.register(cwcScheduleTbl, cwcScheduleTblAdmin)
 
 
