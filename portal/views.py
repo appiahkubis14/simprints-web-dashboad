@@ -68,7 +68,20 @@ class RegionBoundarylayerView(GeoJSONLayerView):
   precision = 4   
   simplify = 0.0001
   properties = ('reg_name', 'reg_code', 'pilot')
+
+
+
+class healthFacilitiestblView(GeoJSONLayerView):
+  model = healthFacilitiesTbl
+
+  precision = 4   
+  simplify = 0.0001
+  properties = ("district__district",'facility_name','facility_type','ownership','no_of_commuities','name_of_incharge','contact_of_incharge','longitude','latitude')
   
+
+
+
+
 def testview(request):
     for aa in Districts.objects.all():
         name= aa.district.replace('DISTRICT','').replace('MUNICIPAL','').replace('METROPOLITAN','')

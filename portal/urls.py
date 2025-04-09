@@ -29,6 +29,10 @@ urlpatterns = [
 
   path('map/region/', RegionBoundarylayerView.as_view()),
 
-  path('test/', testview, name='healthworker')
+  path('test/', testview, name='healthworker'),
+  
+
+
+path('map/healthfacilities/', healthFacilitiestblView.as_view(), name='healthworker'),
   
 ]

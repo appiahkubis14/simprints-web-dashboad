@@ -6,6 +6,46 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 
+
+def getuserLevel(request):
+
+    user = User.objects.get(username=request.user)
+    
+    data={}
+    #print( user.is_superuser)
+    if user.is_superuser:
+        data["region"]=""
+        data["level"]="national"
+        data["group"]="Super Admin"
+
+
+    else:
+        
+        staff= staffTbl.objects.get(user=user)
+        # print(staff.id)
+        # print(sectorStaffassignment.objects.filter(staffTbl_foreignkey=staff.id).values_list("sector__sector"))
+        if districtStaffTbl.objects.filter(staffTbl_foreignkey=staff.id).exists():
+            dist=districtStaffTbl.objects.filter(staffTbl_foreignkey=staff.id).values_list("district_foreignkey__district",flat=True)
+            # 
+            # print("sector")
+            # print(sector)
+            # print("sector")
+            data["district"]=districtStaffTbl.objects.filter(district_foreignkey__district__in = dist ).values_list("district_foreignkey__id",flat=True)
+            data["level"]="district"
+            data["group"]=staff.designation.name
+            # data["sector"]=sector
+            # print(data["district"])
+        else:
+            data["national"]=""
+            data["level"]="national"
+            data["group"]=staff.designation.name
+            data["sector"]=""
+
+    return data
+
+
+
+
 class staffTblResource(resources.ModelResource):
     class Meta:
         model = staffTbl
@@ -47,12 +87,38 @@ admin.site.register(regionStaffTbl, regionStaffTblAdmin)
 class healthFacilitiesTblResource(resources.ModelResource):
     class Meta:
         model = healthFacilitiesTbl
-        fields =('id','district','facility_name','no_of_commuities','name_of_incharge','contact_of_incharge','longitude','latitude','point')
+        fields =('id','district','facility_name','no_of_commuities','name_of_incharge','contact_of_incharge','facility_type','ownership','longitude','latitude',)
 class healthFacilitiesTblAdmin(ImportExportModelAdmin):
     resource_class = healthFacilitiesTblResource
-    list_display = ('district','facility_name','no_of_commuities','name_of_incharge','contact_of_incharge','longitude','latitude',)
-    search_fields = ['facility_name','name_of_incharge','contact_of_incharge','district__district']
+    list_display = ('id','district','facility_name','no_of_commuities','name_of_incharge','contact_of_incharge','facility_type','ownership','longitude','latitude')
+    search_fields = ['facility_name','name_of_incharge','contact_of_incharge','district__district','facility_type','ownership']
     # raw_id_fields =['district',]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user:
+            user = User.objects.get(username=request.user)
+            level=getuserLevel(request)
+            print(level)
+            # if level:
+            #     qs = qs.filter(districtTbl_foreignkey__id__in = level["district"])
+         
+            if level:
+                if level["level"] == "district":
+                    qs = qs.filter(district__id__in = level["district"])
+            #     elif level["level"] == "region":
+            #         qs = qs.filter(districtTbl_foreignkey__reg_code__in = list(level["region"]))
+                elif level["level"] == "national":
+                    qs = qs
+            else:
+                qs = qs
+        return qs
+
+
+
+
+
+
 admin.site.register(healthFacilitiesTbl, healthFacilitiesTblAdmin)
 
 class healthWorkersTblResource(resources.ModelResource):

@@ -39,6 +39,18 @@
         text-shadow: 1px 1px 3px white;
         color: black !important;
     }
+
+    .search-box {
+        position: absolute;
+        top: 82px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
 </style>
 
 
@@ -53,6 +65,10 @@ crossorigin=""></script>
 
 {% block body %}
 <main id="main" class="main">
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Search for a facility..." />
+       
+    </div>
     <div class="row" id="mapdive">
         <!-- Map will be rendered here -->
     </div>

@@ -117,14 +117,32 @@ class regionStaffTbl(timeStamp):
 
 
 class healthFacilitiesTbl(timeStamp):
+    FACILITY_CHOICES = [
+        ('health_centre', 'Health Centre'),
+        ('chps_compound', 'CHPS Compound'),
+        ('polyclinic', 'Polyclinic'),
+        ('maternity_home', 'Maternity Home'),
+        ('Hospital', 'Hospital'),
+    ]
+
+
+    ownership_CHOICES = [
+
+        ('government', 'Government'),
+        ('private_facility', 'Private Facility'),
+        ('chag', 'CHAG'),
+    ]
+
     district = models.ForeignKey(Districts,on_delete=models.CASCADE)
-    facility_name = models.CharField(max_length=24,)
+    facility_name = models.CharField(max_length=24, default="na")
+    facility_type = models.CharField(max_length=24,  default="na" , choices=FACILITY_CHOICES)
+    ownership = models.CharField(max_length=24,choices=ownership_CHOICES)
     no_of_commuities = models.IntegerField()
     name_of_incharge = models.CharField()
     contact_of_incharge = models.CharField()
     longitude = models.FloatField(max_length=10,)
     latitude = models.FloatField(max_length=10,)
-    point = models.PointField()  # For point geometry
+    geom = models.PointField()  # For point geometry
     def save(self, *args, **kwargs):
         # Create a Point using longitude and latitude
         self.point = Point(self.longitude, self.latitude)
