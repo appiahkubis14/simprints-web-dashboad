@@ -159,6 +159,7 @@ class healthWorkersTbl(timeStamp):
     hw_name = models.CharField(max_length=240,)
     designation = models.CharField(max_length=54,)
     hw_contact = models.CharField(max_length=10,)
+    etracker_trained = models.CharField(max_length=10,)
    
 
 class cwcScheduleTbl(timeStamp):

@@ -124,11 +124,11 @@ admin.site.register(healthFacilitiesTbl, healthFacilitiesTblAdmin)
 class healthWorkersTblResource(resources.ModelResource):
     class Meta:
         model = healthWorkersTbl
-        fields =('id','healthFacilitiesTbl_foreignkey','hw_name','designation','hw_contact')
+        fields =('id','healthFacilitiesTbl_foreignkey','hw_name','designation','hw_contact','etracker_trained')
 class healthWorkersTblAdmin(ImportExportModelAdmin):
     resource_class = healthWorkersTblResource
-    list_display = ('id','healthFacilitiesTbl_foreignkey','hw_name','designation','hw_contact')
-    search_fields = ['healthFacilitiesTbl_foreignkey__facility_name','hw_name','hw_contact','designation']
+    list_display = ('id','healthFacilitiesTbl_foreignkey','hw_name','designation','hw_contact','etracker_trained')
+    search_fields = ['healthFacilitiesTbl_foreignkey__facility_name','hw_name','hw_contact','designation','etracker_trained']
     raw_id_fields =('healthFacilitiesTbl_foreignkey',)
 admin.site.register(healthWorkersTbl, healthWorkersTblAdmin)
 
