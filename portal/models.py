@@ -140,12 +140,13 @@ class healthFacilitiesTbl(timeStamp):
     no_of_commuities = models.IntegerField()
     name_of_incharge = models.CharField()
     contact_of_incharge = models.CharField()
-    longitude = models.FloatField(max_length=10,)
-    latitude = models.FloatField(max_length=10,)
+    longitude = models.FloatField(max_length=10,blank=True, null=True)
+    latitude = models.FloatField(max_length=10,blank=True, null=True)
     geom = models.PointField(blank=True,null=True)  # For point geometry
     def save(self, *args, **kwargs):
         # Create a Point using longitude and latitude
-        self.point = Point(self.longitude, self.latitude)
+        if self.longitude and self.latitude:
+            self.geom = Point(self.longitude, self.latitude)
         super().save(*args, **kwargs)  # Call the original save method
 
     def __str__(self):
