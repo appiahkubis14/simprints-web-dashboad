@@ -118,10 +118,10 @@ class regionStaffTbl(timeStamp):
 
 class healthFacilitiesTbl(timeStamp):
     FACILITY_CHOICES = [
-        ('health_centre', 'Health Centre'),
-        ('chps_compound', 'CHPS Compound'),
-        ('polyclinic', 'Polyclinic'),
-        ('maternity_home', 'Maternity Home'),
+        ('Health Centre', 'Health Centre'),
+        ('CHPS Compound', 'CHPS Compound'),
+        ('Polyclinic', 'Polyclinic'),
+        ('Maternity Home', 'Maternity Home'),
         ('Hospital', 'Hospital'),
     ]
 
@@ -142,7 +142,7 @@ class healthFacilitiesTbl(timeStamp):
     contact_of_incharge = models.CharField()
     longitude = models.FloatField(max_length=10,)
     latitude = models.FloatField(max_length=10,)
-    geom = models.PointField()  # For point geometry
+    geom = models.PointField(blank=True,null=True)  # For point geometry
     def save(self, *args, **kwargs):
         # Create a Point using longitude and latitude
         self.point = Point(self.longitude, self.latitude)

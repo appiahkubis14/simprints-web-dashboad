@@ -276,12 +276,31 @@
 
     <ul class="sidebar-nav" id="sidebar-nav">
 
+      
       <li class="nav-item">
-        <a class="nav-link " href="/">
-          <i class="bi bi-grid"></i>
-          <span>Dashboard</span>
+        <a class="nav-link collapsed" data-bs-target="#dashboard-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Dashboard</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-      </li><!-- End Dashboard Nav -->
+        <ul id="dashboard-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/">
+              <i class="bi bi-circle"></i><span>General</span>
+            </a>
+          </li>
+          <li>
+            <a href="/healthfacilities/">
+              <i class="bi bi-circle"></i><span>dash 2</span>
+            </a>
+          </li>
+          <li>
+            <a href="/healthworker/">
+              <i class="bi bi-circle"></i><span>dash 3</span>
+            </a>
+          </li>
+
+        </ul>
+      </li><!-- End Components Nav -->
+
 
       {% comment %} <li class="nav-item">
         <a class="nav-link " href="/report/">
