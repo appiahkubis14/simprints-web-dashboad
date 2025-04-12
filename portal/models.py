@@ -134,12 +134,12 @@ class healthFacilitiesTbl(timeStamp):
     ]
 
     district = models.ForeignKey(Districts,on_delete=models.CASCADE)
-    facility_name = models.CharField(max_length=24, default="na")
-    facility_type = models.CharField(max_length=24,  default="na" , choices=FACILITY_CHOICES)
-    ownership = models.CharField(max_length=24,choices=ownership_CHOICES)
-    no_of_commuities = models.IntegerField()
-    name_of_incharge = models.CharField()
-    contact_of_incharge = models.CharField()
+    facility_name = models.CharField(max_length=240,)
+    facility_type = models.CharField(max_length=240, choices=FACILITY_CHOICES)
+    ownership = models.CharField(max_length=240,choices=ownership_CHOICES)
+    no_of_commuities = models.IntegerField(blank=True, null=True)
+    name_of_incharge = models.CharField(blank=True, null=True)
+    contact_of_incharge = models.CharField(blank=True, null=True)
     longitude = models.FloatField(max_length=10,blank=True, null=True)
     latitude = models.FloatField(max_length=10,blank=True, null=True)
     geom = models.PointField(blank=True,null=True)  # For point geometry
