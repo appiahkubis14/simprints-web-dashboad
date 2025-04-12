@@ -123,6 +123,7 @@ class healthFacilitiesTbl(timeStamp):
         ('Polyclinic', 'Polyclinic'),
         ('Maternity Home', 'Maternity Home'),
         ('Hospital', 'Hospital'),
+        ('Clinic', 'Clinic'),
     ]
 
 
