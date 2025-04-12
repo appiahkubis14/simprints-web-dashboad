@@ -165,14 +165,13 @@ class healthWorkersTbl(timeStamp):
 class cwcScheduleTbl(timeStamp):
     CATEGORY_CHOICES = [
         ('Static', 'Static'),
-        ('Outright', 'Outright'),
+        ('Outreach', 'Outreach'),
     ]
 
     CHOICES = [
         ('Heavy', 'Heavy'),
         ('Normal', 'Normal'),
     ]
-    healthFacilitiesTbl_foreignkey = models.ForeignKey(healthFacilitiesTbl,on_delete=models.CASCADE)
     cwc_type = models.CharField(max_length=24,choices=CATEGORY_CHOICES)
     cwc_category = models.CharField(max_length=24,choices=CHOICES,default="Normal")
     date = models.DateField(max_length=24,)
