@@ -101,8 +101,47 @@
                   <h5 class="card-title">District Facilities  <span>Distributions</span></h5>
 
                   <!-- Bar Chart -->
-              <div id="barChart" style="max-height: 400px;"></div>
-      
+              <canvas id="barChart" style="max-height: 400px;"></canvas>
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  new Chart(document.querySelector('#barChart'), {
+                    type: 'bar',
+                    data: {
+                      labels: {{ alldist | safe }},
+                      datasets: [{
+                        label: 'Total Facilities',
+                        data: {{hfcount|safe}},
+                        backgroundColor: [
+                          'rgba(75, 192, 192, 0.2)',
+                          {% comment %} 'rgba(255, 159, 64, 0.2)',
+                          'rgba(255, 205, 86, 0.2)',
+                          'rgba(75, 192, 192, 0.2)',
+                          'rgba(54, 162, 235, 0.2)',
+                          'rgba(153, 102, 255, 0.2)',
+                          'rgba(201, 203, 207, 0.2)' {% endcomment %}
+                        ],
+                        borderColor: [
+                         'rgb(75, 192, 192)',
+                          {% comment %} 'rgb(255, 159, 64)',
+                          'rgb(255, 205, 86)',
+                          'rgb(75, 192, 192)',
+                          'rgb(54, 162, 235)',
+                          'rgb(153, 102, 255)',
+                          'rgb(201, 203, 207)' {% endcomment %}
+                        ],
+                        borderWidth: 1
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+                });
+              </script>
               <!-- End Bar CHart -->
 
                 </div>
@@ -549,55 +588,6 @@
     </section>
 
   </main><!-- End #main -->
-
-   
-
-
-  <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script> 
-  <script>
-    Highcharts.chart('barChart', {
-      chart: {
-          type: 'column'
-      },
-      title: {
-          text: 'Distribution of Health Facilities and Health Workers by District'
-      },
-      
-      xAxis: {
-          categories: {{alldist|safe}},
-          crosshair: true,
-          accessibility: {
-              description: 'Districts'
-          }
-      },
-      yAxis: {
-          min: 0,
-          title: {
-              text: 'Total Number '
-          }
-      },
-      tooltip: {
-          valueSuffix: ''
-      },
-      plotOptions: {
-          column: {
-              pointPadding: 0.2,
-              borderWidth: 0
-          }
-      },
-      series: [
-          {
-              name: 'Health Facility',
-              data: {{hfcount|safe}}
-          },
-          {
-              name: 'Health Workers',
-              data: {{hwcount|safe}}
-          }
-      ]
-  });
-  
-  </script>
 
 
   {% endblock %}

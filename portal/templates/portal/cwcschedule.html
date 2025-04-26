@@ -3,8 +3,28 @@
 {% load static %}
 {% block body %}
 
+<style>
+  tr.group,
+  tr.group:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
 
+  :root.dark tr.group,
+  :root.dark tr.group:hover {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+  }
+
+  .highcharts-credits {
+    display: none !important;
+  }
+
+  tr.selected {
+  background-color: #780e04 !important;
+  cursor: pointer;
+}
+</style>
 <main id="main" class="main">
+
 
     <div class="pagetitle">
       <h1>Reports</h1>
@@ -55,7 +75,7 @@
              </div>
              <br>
               <!-- Table with stripped rows -->
-              <table class="table datatable">
+              <table class="" id="example">
                 <thead>
                   <tr>
                     
@@ -92,5 +112,44 @@
 
   </main><!-- End #main -->
 
+  <script>
+    var groupColumn = 3;
+   var table = $("#example").DataTable({
+     columnDefs: [{ visible: false, targets: groupColumn }],
+      responsive: true,
+    
+   
+     order: [[groupColumn, "asc"]],
+     displayLength: 16,
+     drawCallback: function (settings) {
+       var api = this.api();
+       var rows = api.rows({ page: "current" }).nodes();
+       var last = null;
+
+       api
+         .column(groupColumn, { page: "current" })
+         .data()
+         .each(function (group, i) {
+           if (last !== group) {
+             $(rows)
+               .eq(i)
+               .before(
+                 '<tr class="group"><td colspan="5">' + group + "</td></tr>"
+               );
+
+             last = group;
+           }
+         });
+     },
+   });
+
+
+
+
+   
+  </script>
 
 {% endblock %}
+
+
+

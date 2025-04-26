@@ -188,31 +188,14 @@ function disstrictupdateLabels() {
 
 
 
-// Style function based on facility_type
-function getStyle(feature) {
-    switch (feature.properties.facility_type) {
-        case 'Health Centre':
-            return { color: 'blue', radius: 8 };
-        case 'CHPS Compound':
-            return { color: 'green', radius: 8 };
-        case 'Maternity Home':
-            return { color: 'red', radius: 8 };
-        case 'Polyclinic':
-            return { color: 'brown', radius: 8 };
-        case 'Hospital':
-                return { color: 'pink', radius: 8 };
-        default:
-            return { color: 'gray', radius: 8 };
-    }
-}
+
+
 
 
 
 
   // Function to bind popups
   function hf_onEachFeature(feature, layer) {
-
-
     let labelToShow = '<table class="table table-bordered">';
     labelToShow += "<thead><tr style='background-color:#4aa;color:white;'><th colspan='2'><b><center>" + feature.properties.facility_name + "</center></b></th></tr></thead>";
     labelToShow += "<tbody><tr><td><b>Facility Type</b></td><td>" + feature.properties.facility_type + "</td></tr>";
@@ -234,35 +217,118 @@ function getStyle(feature) {
     });
 }
 
-  // Load region GeoJSON data
-  $.get("/map/healthfacilities", function (data) {
-   // Add GeoJSON layer with style
-   hf = L.geoJSON(data, {
-    pointToLayer: function (feature, latlng) {
-        const style = getStyle(feature);
-        return L.circleMarker(latlng, {
-            radius: style.radius,
-            fillColor: style.color,
-            color: style.color,
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-        });
-    },
-    onEachFeature: hf_onEachFeature // Bind popups here
-})
-    
- 
 
+
+// Style function based on facility_type
+function getStyle(facilityType) {
+    const styles = {
+        'Health Centre': '/static/portal/assets/img/hf/healthcenter.png',
+        'CHPS Compound': '/static/portal/assets/img/hf/chps.png',
+        'Maternity Home': '/static/portal/assets/img/hf/maternity.png',
+        'Polyclinic': '/static/portal/assets/img/hf/polyclinic.png',
+        'Hospital': '/static/portal/assets/img/hf/hospital.png',
+        // Add more facility types here if needed
+    };
+
+    return styles[facilityType] || '/static/portal/assets/img/hf/default.png'; // Default image if type not found
+}
+
+// Load region GeoJSON data
+$.get("/map/healthfacilities", function (data) {
+    hf = L.geoJSON(data, {
+        pointToLayer: function (feature, latlng) {
+            // Create an icon with the specified image
+            const icon = L.icon({
+                iconUrl: getStyle(feature.properties.facility_type),
+                iconSize: [30, 30], // Adjust size based on your requirements
+                iconAnchor: [15, 30], // Center the icon
+                popupAnchor: [0, -30] // Adjust popup position if needed
+            });
+
+            return L.marker(latlng, { icon: icon });
+        },
+        onEachFeature: hf_onEachFeature // Bind popups here
+    }); // Ensure the layer is added to the map
 });
 
 
 
 
+  // Load region GeoJSON data
+
+ 
 
 
 
-
+function getextent(url, map) {
+    $.get(url, function (data) {
+      map.fitBounds([
+        [data[1], data[0]],
+        [data[3], data[2]],
+      ]);
+    });
+  }
+  
+  function autoquick(code, ftype) {
+    getextent(`/hfextent/${code}/${ftype}/`, map);
+    highlightmap(`/highlightsearch/${code}/${ftype}/`, map, "", selectstyle);
+  }
+  
+  var options = {
+    url: function (phrase) {
+      return "/autocomplete/?phrase=" + phrase;
+    },
+    placeholder: "Search by Facility Nmae",
+    template: {
+      type: "description",
+      fields: {
+        description: "type",
+      },
+    },
+    getValue: "name",
+    requestDelay: 500,
+    list: {
+      match: {
+        enabled: true,
+      },
+      maxNumberOfElements: 15,
+      showAnimation: {
+        type: "slide",
+        time: 300,
+      },
+      hideAnimation: {
+        type: "slide",
+        time: 300,
+      },
+      //   onSelectItemEvent:function(){
+      //     var code = $("#inputsearch").getSelectedItemData().code;
+      //     var ftype = $("#inputsearch").getSelectedItemData().type;
+      //     autoquick1(code,ftype)
+      //   },
+      onChooseEvent: function () {
+        var code = $("#inputsearch").getSelectedItemData().code;
+        var ftype = $("#inputsearch").getSelectedItemData().type;
+        autoquick(code, ftype);
+  
+        $("#leftdrawer").trigger("click");
+      },
+      onKeyEnterEvent: function () {
+        var code = $("#inputsearch").getSelectedItemData().code;
+        var ftype = $("#inputsearch").getSelectedItemData().type;
+        autoquick(code, ftype);
+      },
+      onShowListEvent: function () {
+        $(".circlemainsmallsearch").addClass("hidden");
+      },
+      onLoadEvent: function () {
+        $(".circlemainsmallsearch").removeClass("hidden");
+      },
+    },
+    theme: "blue-light",
+    //theme: "round"
+  };
+  
+  $("#inputsearch").easyAutocomplete(options);
 
 
 
@@ -391,8 +457,10 @@ $('body').on('change', '#health-facilities', function() {
     
     if (isChecked) {
         map.addLayer(hf);
+        $("#healthlegend").show()
     } else {
         map.removeLayer(hf);
+        $("#healthlegend").hide()
     }
     
     // Avoid returning true unless it's necessary for async messaging
@@ -403,12 +471,10 @@ $('body').on('change', '#health-facilities', function() {
 
 
 
+$.get("/map/heatmap/", function (data) {
+var heat = L.heatLayer(data, {radius: 25}).addTo(map);
 
-
-
-
-
-
+})
 
 
 

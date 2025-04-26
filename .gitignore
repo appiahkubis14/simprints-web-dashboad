@@ -1,3 +1,18 @@
 git config --global core.excludesfile ~/.gitignore_global
 echo "*.pyc" >> ~/.gitignore_global
 echo "__pycache__/" >> ~/.gitignore_global
+portal/__pycache__/views.cpython-312.pyc
+portal/__pycache__/views.cpython-312.pyc
+portal/migrations/__pycache__/0022_remove_pcreporttbl_hf_coodinates_pcreporttbl_geom_and_more.cpython-312.pyc
+portal/migrations/__pycache__/0023_alter_client_issuetbl_client_issue_and_more.cpython-312.pyc
+portal/migrations/__pycache__/0024_alter_pcreporttbl_feedback_comment_and_more.cpython-312.pyc
+portal/migrations/__pycache__/0025_alter_client_issuetbl_client_issue_and_more.cpython-312.pyc
+portal/migrations/__pycache__/0026_rename_client_issuetbl_pc_client_issuetbl_and_more.cpython-312.pyc
+portal/migrations/__pycache__/0027_remove_pcreporttbl_client_issue_and_more.cpython-312.pyc
+portal/migrations/__pycache__/0021_pcreporttbl.cpython-312.pyc
+portal/static/portal/.DS_Store
+portal/static/portal/assets/.DS_Store
+portal/static/portal/assets/.DS_Store
+portal/static/portal/assets/img/.DS_Store
+portal/static/portal/assets/.DS_Store
+portal/__pycache__/views.cpython-312.pyc

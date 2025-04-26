@@ -30,7 +30,7 @@
              </div> 
              <br>
               <!-- Table with stripped rows -->
-              <table class="table datatable">
+              <table id="tabldatatable">
                 <thead>
                   <tr>
                     <th>
@@ -65,6 +65,12 @@
     </section>
 
   </main><!-- End #main -->
+
+
+  <script>
+    new DataTable('#tabldatatable');
+
+  </script>
 
 
 {% endblock %}

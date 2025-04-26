@@ -14,6 +14,9 @@ urlpatterns = [
   path('', dashboardview, name='dashboard'),
    path('report/', reportview, name='dashboard'),
 
+  path('oppsdashboard/', oppsdashboardview, name='dashboard'),
+   
+
    path('map/', mapview, name='dashboard'),
 
    path('community/', communityview, name='community'),
@@ -34,5 +37,17 @@ urlpatterns = [
 
 
 path('map/healthfacilities/', healthFacilitiestblView.as_view(), name='healthworker'),
+
+path('map/pcreport/', pcreportTblView.as_view(), name='healthworker'),
+
+
+path('autocomplete/', AutocompleteView , name='autocompleteview'),
+
+ path('hfextent/<int:code>/<slug:ftype>/', hfextentView, name=''),
+
+
+  path('fetchpc/', fetchdataView, name=''),
+
+  path('map/heatmap/', heatmapview, name=''),
   
 ]

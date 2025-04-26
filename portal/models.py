@@ -92,10 +92,10 @@ class staffTbl(timeStamp):
     contact = models.CharField(max_length=250)
     designation = models.ForeignKey(Group, on_delete=models.CASCADE)
     email_address = models.EmailField(max_length=250, blank=True)
-    uid= models.CharField(max_length=2500,blank=True, null=True)
+    uid= models.CharField(max_length=22000,blank=True, null=True)
     district = models.CharField(max_length=250, blank=True, null=True)
     staffid = models.CharField(max_length=250, blank=True, null=True)
-    mpassword = models.CharField(max_length=250,default="P@ssw0rd24")
+    mpassword = models.CharField(max_length=250,default="P@ssw0rd2000")
 
     def __str__(self):
         return str(f'{self.first_name} {self.last_name}')
@@ -135,9 +135,9 @@ class healthFacilitiesTbl(timeStamp):
     ]
 
     district = models.ForeignKey(Districts,on_delete=models.CASCADE)
-    facility_name = models.CharField(max_length=240,)
-    facility_type = models.CharField(max_length=240, choices=FACILITY_CHOICES)
-    ownership = models.CharField(max_length=240,choices=ownership_CHOICES)
+    facility_name = models.CharField(max_length=20000,)
+    facility_type = models.CharField(max_length=20000, choices=FACILITY_CHOICES)
+    ownership = models.CharField(max_length=20000,choices=ownership_CHOICES)
     no_of_commuities = models.IntegerField(blank=True, null=True)
     name_of_incharge = models.CharField(blank=True, null=True)
     contact_of_incharge = models.CharField(blank=True, null=True)
@@ -156,7 +156,7 @@ class healthFacilitiesTbl(timeStamp):
 
 class healthWorkersTbl(timeStamp):
     healthFacilitiesTbl_foreignkey = models.ForeignKey(healthFacilitiesTbl,on_delete=models.CASCADE)
-    hw_name = models.CharField(max_length=240,)
+    hw_name = models.CharField(max_length=20000,)
     designation = models.CharField(max_length=54,)
     hw_contact = models.CharField(max_length=10,)
     etracker_trained = models.CharField(max_length=10,)
@@ -173,15 +173,15 @@ class cwcScheduleTbl(timeStamp):
         ('Normal', 'Normal'),
     ]
     healthFacilitiesTbl_foreignkey = models.ForeignKey(healthFacilitiesTbl,on_delete=models.CASCADE)
-    cwc_type = models.CharField(max_length=24,choices=CATEGORY_CHOICES)
-    cwc_category = models.CharField(max_length=24,choices=CHOICES,default="Normal")
-    date = models.DateField(max_length=24,)
+    cwc_type = models.CharField(max_length=2000,choices=CATEGORY_CHOICES)
+    cwc_category = models.CharField(max_length=2000,choices=CHOICES,default="Normal")
+    date = models.DateField(max_length=2000,)
 
 class communityTbl(timeStamp):
     healthFacilitiesTbl_foreignkey = models.ForeignKey(healthFacilitiesTbl,on_delete=models.CASCADE)
-    community = models.CharField(max_length=24,)
-    community_leader_name= models.CharField(max_length=24,blank=True)
-    community_leader_contact= models.CharField(max_length=24,blank=True,default="Not available")
+    community = models.CharField(max_length=2000,)
+    community_leader_name= models.CharField(max_length=2000,blank=True)
+    community_leader_contact= models.CharField(max_length=2000,blank=True,default="Not available")
     population = models.IntegerField()
  
 
@@ -219,3 +219,57 @@ class assetFacilityassignementTbl(timeStamp):
 
 # add category to the cwc tbl
 #   movement_plan tbl 
+class pcreportTbl(timeStamp):
+    name_of_pc= models.CharField(max_length=2000,blank=True)
+    reporting_date= models.CharField(max_length=2000,blank=True)
+    district= models.CharField(max_length=2000,blank=True)
+    hf_name= models.CharField(max_length=2000,blank=True)
+    hf_coodinates_lat= models.FloatField(max_length=2000,blank=True)
+    hf_coodinates_lng = models.FloatField(max_length=2000,blank=True)
+    geom = models.GeometryField(null=True,blank=True)
+    new_registrants= models.CharField(max_length=2000,blank=True)
+    tablets_functional= models.CharField(max_length=2000,blank=True)
+    # issue_with_tablet= models.CharField(max_length=2000,blank=True)
+    scanners_functional= models.CharField(max_length=2000,blank=True)
+    # issue_with_scanner= models.CharField(max_length=2000,blank=True)
+    hw_concern_about_etracker= models.CharField(max_length=2000,blank=True)
+    # hw_concern= models.CharField(max_length=2000,blank=True)
+    hw_concern_about_biometrics= models.CharField(max_length=2000,blank=True)
+    # hw_concern_biometric= models.CharField(max_length=2000,blank=True)
+    clients_have_issues= models.CharField(max_length=2000,blank=True)
+    # client_issue= models.CharField(max_length=2000,blank=True)
+    positive_feedback= models.CharField(max_length=2000,blank=True)
+    hw_positive_feedback= models.CharField(max_length=2000,blank=True)
+    feedback_comment= models.CharField(max_length=2000,blank=True,null=True)
+    recommendation= models.CharField(max_length=2000,blank=True,null=True)
+    SubmissionDate= models.CharField(max_length=2000,blank=True)
+    uid= models.CharField(max_length=2000,blank=True)
+
+    def save(self, *args, **kwargs):
+        # Create a Point using longitude and latitude
+        if self.hf_coodinates_lat and self.hf_coodinates_lng:
+            self.geom = Point(self.hf_coodinates_lng, self.hf_coodinates_lat)
+        super().save(*args, **kwargs)  # Call the original save method
+
+
+
+class pc_tabletissueTbl(timeStamp):
+    pcreportTbl_foreignkey = models.ForeignKey(pcreportTbl, on_delete=models.CASCADE)
+    tablet_issue= models.CharField(max_length=2000,blank=True)
+
+class pc_issuewithscannerTbl(timeStamp):
+    pcreportTbl_foreignkey = models.ForeignKey(pcreportTbl, on_delete=models.CASCADE)
+    issue_with_scanner= models.CharField(max_length=2000,blank=True)
+
+class pc_hw_concernTbl(timeStamp):
+    pcreportTbl_foreignkey = models.ForeignKey(pcreportTbl, on_delete=models.CASCADE)
+    hw_concern = models.CharField(max_length=2000,blank=True)
+
+class pc_hw_concern_biometricTbl(timeStamp):
+    pcreportTbl_foreignkey = models.ForeignKey(pcreportTbl, on_delete=models.CASCADE)
+    hw_concern_biometric = models.CharField(max_length=2000,blank=True)
+
+
+class pc_client_issueTbl(timeStamp):
+    pcreportTbl_foreignkey = models.ForeignKey(pcreportTbl, on_delete=models.CASCADE)
+    client_issue = models.CharField(max_length=2000,blank=True)
