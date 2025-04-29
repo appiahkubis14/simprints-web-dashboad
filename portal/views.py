@@ -3,6 +3,9 @@ from django.http import HttpResponseRedirect, JsonResponse,HttpResponse
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import authenticate,login as Login,logout as Logout
 from django.contrib.auth.decorators import login_required
+
+from django.db.models import Sum
+
 import ast,json
 from django.db.models import Q
 from djgeojson.views import GeoJSONLayerView
@@ -12,20 +15,26 @@ from .models import *
 @ login_required(login_url='/accounts/login')
 def dashboardview(request):
     hf = healthFacilitiesTbl.objects.all().count()
+    community = healthFacilitiesTbl.objects.all().aggregate(Sum('no_of_commuities'))['no_of_commuities__sum']
+    print("asd",community)
     hw = healthWorkersTbl.objects.all().count()
+    # community=communityTbl.objects.all().count()
     district = Districts.objects.filter(pilot=True)
     dist = district.count()
     alldist = my_list = [item.district for item in district] 
     # district.values_list('district',flat=True)
+
     hfcount=[]
     hwcount=[]
+    comarr=[]
     for aa in district :
         chf= healthFacilitiesTbl.objects.filter(district=aa.id).count()
         chw = healthWorkersTbl.objects.filter(healthFacilitiesTbl_foreignkey__district=aa.id).count()
+        comm= healthFacilitiesTbl.objects.filter(district=aa.id).aggregate(Sum('no_of_commuities'))['no_of_commuities__sum']
         hfcount.append(chf)
         hwcount.append(chw)
-
-    print(hwcount)
+        comarr.append(comm)
+    print(comarr)
    
     return render(request, 'portal/index.html', locals())
 
@@ -139,6 +148,7 @@ class pcreportTblView(GeoJSONLayerView):
         enddate = self.request.GET.get('endDate')
 
         if startdate and enddate:
+            print("hellooo")
             filter_query['reporting_date__range'] = (startdate, enddate)
         elif startdate:
             filter_query['reporting_date__date__gte'] = startdate
@@ -667,3 +677,15 @@ def heatmapview(request):
         # print(hwcount)
     
         return JsonResponse(res , safe=False)
+    
+
+@ login_required(login_url='/accounts/login')
+def pcreportview(request):
+   
+    return render(request, 'portal/pcreport.html', locals())
+
+
+
+def pcreportvResultsview(request):
+   
+    return render(request, 'portal/pcreport.html', locals())

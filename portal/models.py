@@ -127,17 +127,17 @@ class healthFacilitiesTbl(timeStamp):
     ]
 
 
-    ownership_CHOICES = [
+    # ownership_CHOICES = [
 
-        ('government', 'Government'),
-        ('private_facility', 'Private Facility'),
-        ('chag', 'CHAG'),
-    ]
+    #     ('government', 'Government'),
+    #     ('private_facility', 'Private Facility'),
+    #     ('chag', 'CHAG'),
+    # ]
 
     district = models.ForeignKey(Districts,on_delete=models.CASCADE)
     facility_name = models.CharField(max_length=20000,)
     facility_type = models.CharField(max_length=20000, choices=FACILITY_CHOICES)
-    ownership = models.CharField(max_length=20000,choices=ownership_CHOICES)
+    ownership = models.CharField(max_length=20000)
     no_of_commuities = models.IntegerField(blank=True, null=True)
     name_of_incharge = models.CharField(blank=True, null=True)
     contact_of_incharge = models.CharField(blank=True, null=True)
@@ -221,7 +221,7 @@ class assetFacilityassignementTbl(timeStamp):
 #   movement_plan tbl 
 class pcreportTbl(timeStamp):
     name_of_pc= models.CharField(max_length=2000,blank=True)
-    reporting_date= models.CharField(max_length=2000,blank=True)
+    reporting_date= models.DateField(max_length=2000,blank=True)
     district= models.CharField(max_length=2000,blank=True)
     hf_name= models.CharField(max_length=2000,blank=True)
     hf_coodinates_lat= models.FloatField(max_length=2000,blank=True)

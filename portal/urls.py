@@ -49,5 +49,7 @@ path('autocomplete/', AutocompleteView , name='autocompleteview'),
   path('fetchpc/', fetchdataView, name=''),
 
   path('map/heatmap/', heatmapview, name=''),
+
+   path('pcreport/', pcreportview, name=''),
   
 ]
