@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate,login as Login,logout as Logout
 from django.contrib.auth.decorators import login_required
 
 from django.db.models import Sum
-from datetime import datetime
+
 import ast,json
 from django.db.models import Q
 from djgeojson.views import GeoJSONLayerView
@@ -524,6 +524,7 @@ def fetchdataView(request):
         'client_issue_Lack_Of_Education',
     ]
 
+    from datetime import datetime
     for data in datas:
         # Extract data
         CompletionDate = data.get('CompletionDate')
