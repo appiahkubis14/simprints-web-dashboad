@@ -530,6 +530,7 @@ def fetchdataView(request):
         SubmissionDate = data.get('SubmissionDate')
         name_of_pc = data.get('name_of_pc')
         reporting_date = data.get('reporting_date')
+        reporting_date = datetime.strptime(reporting_date, "%b %d, %Y").date()
         district = data.get('district')
         hf_name = data.get('hf_name')
         hf_coordinates = data.get('hf_coodinates').split()

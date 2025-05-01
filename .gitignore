@@ -22,3 +22,5 @@ portal/__pycache__/views.cpython-312.pyc
 portal/migrations/__pycache__/0028_alter_pcreporttbl_reporting_date.cpython-312.pyc
 portal/migrations/__pycache__/0029_alter_healthfacilitiestbl_ownership.cpython-312.pyc
 portal/__pycache__/views.cpython-312.pyc
+portal/__pycache__/models.cpython-312.pyc
+portal/__pycache__/views.cpython-312.pyc
