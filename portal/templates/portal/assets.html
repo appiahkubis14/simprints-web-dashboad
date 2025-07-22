@@ -1,0 +1,595 @@
+{% extends "portal/base.html" %}
+{% block assets %} active {% endblock %}
+{% load static %}
+{% block body %}
+
+<style>
+  .asset-card {
+    transition: all 0.3s ease;
+  }
+  .asset-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  .badge-status-active {
+    background-color: #198754;
+  }
+  .badge-status-inactive {
+    background-color: #dc3545;
+  }
+  .action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+</style>
+
+<main id="main" class="main">
+  <div class="pagetitle" style="display: flex;justify-content: space-between;">
+    <h1>Asset Management</h1>
+    <nav>
+      <ol class="breadcrumb" >
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item">Inventory</li>
+        <li class="breadcrumb-item active">Assets</li>
+      </ol>
+    </nav>
+  </div>
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Assets</h5>
+            <div>
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAssetModal">
+                <i class="bi bi-plus-circle"></i> Add New Asset
+              </button>
+              <button class="btn btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#addAssetTypeModal">
+                <i class="bi bi-tag"></i> Add Asset Type
+              </button>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <!-- Filter Section -->
+            <div class="row mb-3 g-3">
+              <div class="col-md-3">
+                <select id="typeFilter" class="form-select">
+                  <option value="">All Types</option>
+                  {% for type in asset_types %}
+                  <option value="{{ type.id }}">{{ type.asset_type }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="statusFilter" class="form-select">
+                  <option value="">All Statuses</option>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <input type="text" class="form-control" id="searchFilter" placeholder="Search by brand/model/serial">
+              </div>
+              <div class="col-md-3">
+                <button id="resetFilters" class="btn btn-outline-secondary w-100">Reset Filters</button>
+              </div>
+            </div>
+            
+            <!-- Asset List -->
+            <div class="table-responsive">
+              <table id="assetsTable" class="table table-hover" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Serial Number</th>
+                    <th>Purchase Date</th>
+                    <th>Warranty</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Data will be loaded via AJAX -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Add Asset Modal -->
+<div class="modal fade" id="addAssetModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Asset</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="addAssetForm">
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="assetType" class="form-label">Asset Type *</label>
+            <select class="form-select" id="assetType" name="asset_type" required>
+              <option value="">Select Type</option>
+              {% for type in asset_types %}
+              <option value="{{ type.id }}">{{ type.asset_type }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="brand" class="form-label">Brand *</label>
+            <input type="text" class="form-control" id="brand" name="brand" required>
+          </div>
+          <div class="mb-3">
+            <label for="model" class="form-label">Model *</label>
+            <input type="text" class="form-control" id="model" name="model" required>
+          </div>
+          <div class="mb-3">
+            <label for="serialNumber" class="form-label">Serial Number *</label>
+            <input type="text" class="form-control" id="serialNumber" name="serial_number" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="purchaseDate" class="form-label">Purchase Date *</label>
+              <input type="date" class="form-control" id="purchaseDate" name="purchase_date" required>
+            </div>
+            <div class="col-md-6">
+              <label for="warrantyExpiration" class="form-label">Warranty Expiration *</label>
+              <input type="date" class="form-control" id="warrantyExpiration" name="warranty_expiration" required>
+            </div>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="status" name="status" checked>
+            <label class="form-check-label" for="status">Active</label>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex;justify-content: space-between;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Asset Type Modal -->
+<div class="modal fade" id="addAssetTypeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Asset Type</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="addAssetTypeForm">
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="assetTypeName" class="form-label">Asset Type Name *</label>
+            <input type="text" class="form-control" id="assetTypeName" name="asset_type" required>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex;justify-content: space-between;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Asset Type</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Asset Modal -->
+<div class="modal fade" id="editAssetModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Asset</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editAssetForm">
+        <div class="modal-body">
+          {% csrf_token %}
+          <input type="hidden" id="editAssetId" name="id">
+          <div class="mb-3">
+            <label for="editAssetType" class="form-label">Asset Type *</label>
+            <select class="form-select" id="editAssetType" name="asset_type" required>
+              <option value="">Select Type</option>
+              {% for type in asset_types %}
+              <option value="{{ type.id }}">{{ type.asset_type }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editBrand" class="form-label">Brand *</label>
+            <input type="text" class="form-control" id="editBrand" name="brand" required>
+          </div>
+          <div class="mb-3">
+            <label for="editModel" class="form-label">Model *</label>
+            <input type="text" class="form-control" id="editModel" name="model" required>
+          </div>
+          <div class="mb-3">
+            <label for="editSerialNumber" class="form-label">Serial Number *</label>
+            <input type="text" class="form-control" id="editSerialNumber" name="serial_number" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="editPurchaseDate" class="form-label">Purchase Date *</label>
+              <input type="date" class="form-control" id="editPurchaseDate" name="purchase_date" required>
+            </div>
+            <div class="col-md-6">
+              <label for="editWarrantyExpiration" class="form-label">Warranty Expiration *</label>
+              <input type="date" class="form-control" id="editWarrantyExpiration" name="warranty_expiration" required>
+            </div>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="editStatus" name="status">
+            <label class="form-check-label" for="editStatus">Active</label>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex;justify-content: space-between;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+  // Initialize DataTable
+  const table = $('#assetsTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: "/assets/data/",
+      type: "GET",
+      data: function(d) {
+        d.type = $('#typeFilter').val();
+        d.status = $('#statusFilter').val();
+        d.search = $('#searchFilter').val();
+      }
+    },
+    columns: [
+      { data: "id", name: "id" },
+      { data: "asset_type", name: "asset_type" },
+      { data: "brand", name: "brand" },
+      { data: "model", name: "model" },
+      { data: "serial_number", name: "serial_number" },
+      { 
+        data: "purchase_date", 
+        name: "purchase_date",
+        render: function(data) {
+          return new Date(data).toLocaleDateString();
+        }
+      },
+      { 
+        data: "warranty_expiration", 
+        name: "warranty_expiration",
+        render: function(data) {
+          return new Date(data).toLocaleDateString();
+        }
+      },
+      { 
+        data: "status", 
+        name: "status",
+        render: function(data) {
+          return data ? 
+            '<span class="badge badge-status-active">Active</span>' : 
+            '<span class="badge badge-status-inactive">Inactive</span>';
+        }
+      },
+      { 
+        data: "id",
+        name: "actions",
+        orderable: false,
+        searchable: false,
+        render: function(data) {
+          return `
+            <div class="action-buttons">
+              <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${data}">
+                <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${data}">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
+          `;
+        }
+      }
+    ],
+    order: [[0, 'desc']], // Sort by ID descending by default
+    responsive: true
+  });
+
+  // Apply filters when they change
+  $('#typeFilter, #statusFilter').change(function() {
+    table.ajax.reload();
+  });
+
+  // Apply search filter on enter key or after delay
+  $('#searchFilter').keyup(debounce(function() {
+    table.ajax.reload();
+  }, 500));
+
+  // Reset all filters
+  $('#resetFilters').click(function() {
+    $('#typeFilter').val('');
+    $('#statusFilter').val('');
+    $('#searchFilter').val('');
+    table.ajax.reload();
+  });
+
+  // Handle add asset form submission
+  $('#addAssetForm').submit(function(e) {
+    e.preventDefault();
+    const formData = $(this).serialize();
+    
+    $.ajax({
+      url: "/add_asset/",
+      type: "POST",
+      data: formData,
+      beforeSend: function() {
+        $('#addAssetForm button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+      },
+      success: function(response) {
+        if (response.success) {
+          $('#addAssetModal').modal('hide');
+          $('#addAssetForm')[0].reset();
+          table.ajax.reload();
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Asset added successfully!',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        } else {
+          let errorMessage = 'Failed to add asset';
+          if (response.error) {
+            errorMessage = response.error;
+          } else if (response.errors) {
+            errorMessage = Object.values(response.errors).join('<br>');
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            html: errorMessage
+          });
+        }
+      },
+      error: function(xhr) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while adding the asset'
+        });
+      },
+      complete: function() {
+        $('#addAssetForm button[type="submit"]').prop('disabled', false).text('Save Asset');
+      }
+    });
+  });
+
+  // Handle add asset type form submission
+  $('#addAssetTypeForm').submit(function(e) {
+    e.preventDefault();
+    const formData = $(this).serialize();
+    
+    $.ajax({
+      url: "/add_asset_type/",
+      type: "POST",
+      data: formData,
+      beforeSend: function() {
+        $('#addAssetTypeForm button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+      },
+      success: function(response) {
+        if (response.success) {
+          $('#addAssetTypeModal').modal('hide');
+          $('#addAssetTypeForm')[0].reset();
+          // Reload the page to get the new asset type in dropdowns
+          location.reload();
+        } else {
+          let errorMessage = 'Failed to add asset type';
+          if (response.error) {
+            errorMessage = response.error;
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage
+          });
+        }
+      },
+      error: function(xhr) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while adding the asset type'
+        });
+      },
+      complete: function() {
+        $('#addAssetTypeForm button[type="submit"]').prop('disabled', false).text('Save Asset Type');
+      }
+    });
+  });
+
+  // Handle edit button click
+  $(document).on('click', '.edit-btn', function() {
+    const assetId = $(this).data('id');
+    
+    $.ajax({
+      url: `/get_asset/${assetId}/`,
+      type: "GET",
+      beforeSend: function() {
+        Swal.fire({
+          title: 'Loading...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+      },
+      success: function(response) {
+        Swal.close();
+        $('#editAssetId').val(response.id);
+        $('#editAssetType').val(response.asset_type_foreignkey);
+        $('#editBrand').val(response.brand);
+        $('#editModel').val(response.model);
+        $('#editSerialNumber').val(response.serial_number);
+        $('#editPurchaseDate').val(response.purchase_date.split('T')[0]);
+        $('#editWarrantyExpiration').val(response.warranty_expiration.split('T')[0]);
+        $('#editStatus').prop('checked', response.status);
+        $('#editAssetModal').modal('show');
+      },
+      error: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load asset data'
+        });
+      }
+    });
+  });
+
+  // Handle edit form submission
+  $('#editAssetForm').submit(function(e) {
+    e.preventDefault();
+    const formData = $(this).serialize();
+    
+    $.ajax({
+      url: "/edit_asset/",
+      type: "POST",
+      data: formData,
+      beforeSend: function() {
+        $('#editAssetForm button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...');
+      },
+      success: function(response) {
+        if (response.success) {
+          $('#editAssetModal').modal('hide');
+          table.ajax.reload();
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Asset updated successfully!',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        } else {
+          let errorMessage = 'Failed to update asset';
+          if (response.error) {
+            errorMessage = response.error;
+          } else if (response.errors) {
+            errorMessage = Object.values(response.errors).join('<br>');
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            html: errorMessage
+          });
+        }
+      },
+      error: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while updating the asset'
+        });
+      },
+      complete: function() {
+        $('#editAssetForm button[type="submit"]').prop('disabled', false).text('Update Asset');
+      }
+    });
+  });
+
+  // Handle delete button click
+  $(document).on('click', '.delete-btn', function() {
+    const assetId = $(this).data('id');
+    
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteAsset(assetId);
+      }
+    });
+  });
+
+  // Delete asset function
+  function deleteAsset(assetId) {
+    Swal.fire({
+      title: 'Deleting...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+    
+    $.ajax({
+      url: "/delete_asset/",
+      type: "POST",
+      data: {
+        id: assetId,
+        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+      },
+      success: function(response) {
+        if (response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Asset deleted successfully!',
+            timer: 3000,
+            showConfirmButton: false
+          });
+          table.ajax.reload();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'Failed to delete asset'
+          });
+        }
+      },
+      error: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while deleting the asset'
+        });
+      }
+    });
+  }
+
+  // Debounce function for search input
+  function debounce(func, wait, immediate) {
+    let timeout;
+    return function() {
+      const context = this, args = arguments;
+      const later = function() {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      const callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
+  }
+});
+</script>
+{% endblock %}

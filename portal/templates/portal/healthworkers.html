@@ -3,71 +3,411 @@
 {% load static %}
 {% block body %}
 
-
 <main id="main" class="main">
-
-    <div class="pagetitle">
-      <h1>Reports</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item">Report</li>
-          <li class="breadcrumb-item active">Health Workers</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
+    <div class="pagetitle" style="display: flex;justify-content: space-between;">
+        <h1>Health Workers Management</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item">Reports</li>
+                <li class="breadcrumb-item active">Health Workers</li>
+            </ol>
+        </nav>
+    </div>
 
     <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Health Workers List</h5>
-            <div class="row">
-                <a href="/admin/portal/healthworkerstbl/add/"> <button type="button" class="btn btn-success" style="width:18%;margin-left:80%">Add Health Worker + </button></a>
-
-             </div> 
-             <br>
-              <!-- Table with stripped rows -->
-              <table id="tabldatatable">
-                <thead>
-                  <tr>
-                    
-                    <th>Facility Name</th>
-                    <th>Health Worker Name</th>
-                    <th>Designation</th>
-                    <th>Contact of Health Worker</th>
-                   
-                   
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for aa in hf %}
-                  <tr>
-                    <td>{{aa.healthFacilitiesTbl_foreignkey | title}}</td>
-                    <td>{{aa.hw_name| title}}</td>
-                    <td>{{aa.designation | title}}</td>
-                    <td>{{aa.hw_contact| title}}</td>
-                    
-                    
-                  </tr>
-                  {% endfor %}
-            
-                </tbody>
-              </table>
-              <!-- End Table with stripped rows -->
-
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">Health Workers List</h5>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHealthWorkerModal">
+                            <i class="bi bi-plus-circle"></i> Add Health Worker
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table id="healthWorkersTable" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Facility Name</th>
+                                    <th>Health Worker Name</th>
+                                    <th>Designation</th>
+                                    <th>Contact</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-          </div>
-
         </div>
-      </div>
     </section>
+</main>
 
-  </main><!-- End #main -->
-  <script>
-    new DataTable('#tabldatatable');
+<!-- Add Health Worker Modal -->
+<div class="modal fade" id="addHealthWorkerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Health Worker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="healthWorkerForm" method="POST">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="facility" class="form-label">Health Facility *</label>
+                            <select class="form-select" id="facility" name="facility" required>
+                                <option value="">Select Health Facility</option>
+                                {% for facility in health_facilities %}
+                                <option value="{{ facility.id }}">{{ facility.facility_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="hw_name" class="form-label">Health Worker Name *</label>
+                            <input type="text" class="form-control" id="hw_name" name="hw_name" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="designation" class="form-label">Designation *</label>
+                            <input type="text" class="form-control" id="designation" name="designation" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="hw_contact" class="form-label">Contact *</label>
+                            <input type="text" class="form-control" id="hw_contact" name="hw_contact" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex;justify-content: space-between;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Health Worker</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-  </script>
+<!-- Edit Health Worker Modal -->
+<div class="modal fade" id="editHealthWorkerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Health Worker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editHealthWorkerForm" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit_id" name="id">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_facility" class="form-label">Health Facility *</label>
+                            <select class="form-select" id="edit_facility" name="facility" required>
+                                <option value="">Select Health Facility</option>
+                                {% for facility in health_facilities %}
+                                <option value="{{ facility.id }}">{{ facility.facility_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_hw_name" class="form-label">Health Worker Name *</label>
+                            <input type="text" class="form-control" id="edit_hw_name" name="hw_name" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_designation" class="form-label">Designation *</label>
+                            <input type="text" class="form-control" id="edit_designation" name="designation" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_hw_contact" class="form-label">Contact *</label>
+                            <input type="text" class="form-control" id="edit_hw_contact" name="hw_contact" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex;justify-content: space-between;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Health Worker</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this health worker? This action cannot be undone.</p>
+                <p id="workerToDelete"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include required libraries -->
+<!-- <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script> -->
+
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
+    var table = $('#healthWorkersTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "/health_workers/data/",
+            type: "GET"
+        },
+        columns: [
+            { data: "id" },
+            { data: "facility_name" },
+            { data: "hw_name" },
+            { data: "designation" },
+            { data: "hw_contact" },
+            { 
+                data: "id",
+                render: function(data, type, row) {
+                    return `
+                       <div class="action-buttons">
+                        <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${data}">
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${data}">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                        </div>
+                    `;
+                },
+                orderable: false,
+                searchable: false
+            }
+        ],
+        responsive: true,
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        order: [[0, 'desc']]
+    });
+
+    // Handle form submission for adding new worker
+    $('#healthWorkerForm').submit(function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        
+        Swal.fire({
+            title: 'Adding Health Worker',
+            text: 'Please wait...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                $.ajax({
+                    url: "/add_health_worker/",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        Swal.close();
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Health worker added successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            $('#addHealthWorkerModal').modal('hide');
+                            table.ajax.reload();
+                            $('#healthWorkerForm')[0].reset();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.error || 'Failed to add health worker'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while adding the health worker'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    // Handle edit button click
+    $(document).on('click', '.edit-btn', function() {
+        var id = $(this).data('id');
+        
+        Swal.fire({
+            title: 'Loading Worker Data',
+            text: 'Please wait...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                $.ajax({
+                    url: "/get_health_worker/" + id + "/",
+                    type: "GET",
+                    success: function(response) {
+                        Swal.close();
+                        if (response) {
+                            $('#edit_id').val(response.id);
+                            $('#edit_facility').val(response.facility_id);
+                            $('#edit_hw_name').val(response.hw_name);
+                            $('#edit_designation').val(response.designation);
+                            $('#edit_hw_contact').val(response.hw_contact);
+                            
+                            $('#editHealthWorkerModal').modal('show');
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to load worker data'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to load worker data'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    // Handle form submission for editing worker
+    $('#editHealthWorkerForm').submit(function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        console.log(formData);
+        
+        Swal.fire({
+            title: 'Updating Health Worker',
+            text: 'Please wait...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                $.ajax({
+                    url: "/edit_health_worker/",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        Swal.close();
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Health worker updated successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            $('#editHealthWorkerModal').modal('hide');
+                            table.ajax.reload();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.error || 'Failed to update health worker'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while updating the health worker'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    // Handle delete button click
+    $(document).on('click', '.delete-btn', function() {
+        var id = $(this).data('id');
+        var row = $(this).closest('tr');
+        var workerName = row.find('td:eq(2)').text();
+        
+        $('#workerToDelete').text('Worker: ' + workerName);
+        $('#deleteConfirmationModal').modal('show');
+        
+        $('#confirmDelete').off('click').on('click', function() {
+            $('#deleteConfirmationModal').modal('hide');
+            
+            Swal.fire({
+                title: 'Deleting Health Worker',
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                    $.ajax({
+                        url: "/delete_health_worker/",
+                        type: "POST",
+                        data: {
+                            id: id,
+                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                        },
+                        success: function(response) {
+                            Swal.close();
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Health worker deleted successfully',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                table.ajax.reload();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.error || 'Failed to delete health worker'
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while deleting the health worker'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+});
+</script>
+
 {% endblock %}

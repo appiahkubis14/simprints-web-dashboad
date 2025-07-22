@@ -1,5 +1,5 @@
-
-{% load humanize %} {% load static %}
+{% load humanize %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,35 +29,34 @@
   <link href="/static/portal/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link href="/static/portal/assets/vendor/simple-datatables/style.css" rel="stylesheet">
 
+  <!-- DataTables CSS -->
   <link href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  
   <!-- Template Main CSS File -->
   <link href="/static/portal/assets/css/style.css" rel="stylesheet">
 
+  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
- 
-{% block js %}
-{% endblock %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+  
+  <!-- Highcharts -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
   {% block css %}
   {% endblock %}
-
-
+  {% block js %}
+  {% endblock %}
 </head>
 
 <body>
-
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
-
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="/" class="logo d-flex align-items-center">
         <img src="/static/portal/assets/img/logo.png" alt="">
         <span class="d-none d-lg-block">Simprints</span>
       </a>
@@ -73,20 +72,17 @@
 
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
-
         <li class="nav-item d-block d-lg-none">
-          <a class="nav-link nav-icon search-bar-toggle " href="#">
+          <a class="nav-link nav-icon search-bar-toggle" href="#">
             <i class="bi bi-search"></i>
           </a>
         </li><!-- End Search Icon-->
 
-       
         <li class="nav-item dropdown pe-3">
-
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <img src="/static/portal/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
             <span class="d-none d-md-block dropdown-toggle ps-2">{{user}}</span>
-          </a><!-- End Profile Iamge Icon -->
+          </a><!-- End Profile Image Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
@@ -133,124 +129,100 @@
                 <span>Sign Out</span>
               </a>
             </li>
-
           </ul><!-- End Profile Dropdown Items -->
         </li><!-- End Profile Nav -->
-
       </ul>
     </nav><!-- End Icons Navigation -->
-
   </header><!-- End Header -->
 
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
-
     <ul class="sidebar-nav" id="sidebar-nav">
-
-      
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#dashboard-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link {% if not request.path == '/map/' and not 'components-nav' in request.path and not 'components-pc' in request.path %}active{% else %}collapsed{% endif %}" data-bs-target="#dashboard-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Dashboard</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="dashboard-nav" class="nav-content collapse active" data-bs-parent="#sidebar-nav">
+        <ul id="dashboard-nav" class="nav-content collapse {% if not request.path == '/map/' and not 'components-nav' in request.path and not 'components-pc' in request.path %}show{% endif %}" data-bs-parent="#sidebar-nav">
           <li>
-            <a href="/">
+            <a href="/" class="{% if request.path == '/' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>General</span>
             </a>
           </li>
-          <li>
-            <a href="/healthfacilities/">
+          <!-- <li>
+            <a href="/healthfacilities/" class="{% if request.path == '/healthfacilities/' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>dash 2</span>
             </a>
           </li>
           <li>
-            <a href="/healthworker/">
+            <a href="/healthworker/" class="{% if request.path == '/healthworker/' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>dash 3</span>
             </a>
-          </li>
-
+          </li> -->
         </ul>
       </li><!-- End Components Nav -->
 
-
-      {% comment %} <li class="nav-item">
-        <a class="nav-link " href="/report/">
-          <i class="bi bi-grid"></i>
-          <span>Report</span>
-        </a>
-      </li><!-- End Dashboard Nav --> {% endcomment %}
-
-
       <li class="nav-item">
-        <a class="nav-link " href="/map/">
+        <a class="nav-link {% if request.path == '/map/' %}active{% endif %}" href="/map/">
           <i class="bi bi-grid"></i>
           <span>GeoMonitor</span>
         </a>
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link {% if 'components-nav' in request.path %}active{% else %}collapsed{% endif %}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Inventory</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="components-nav" class="nav-content collapse {% if 'components-nav' in request.path %}show{% endif %}" data-bs-parent="#sidebar-nav">
           <li>
-            <a href="/community/">
+            <a href="/community/" class="{% if request.path == '/community/' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>Community List</span>
             </a>
           </li>
           <li>
-            <a href="/healthfacilities/">
+            <a href="/healthfacilities/" class="{% if request.path == '/healthfacilities/' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>Health Facilities</span>
             </a>
           </li>
           <li>
-            <a href="/healthworker/">
+            <a href="/healthworker/" class="{% if request.path == '/healthworker/' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>Health Workers</span>
             </a>
           </li>
-          
           <li>
-            <a href="/cwcschedule/">
+            <a href="/cwcschedule/" class="{% if request.path == '/cwcschedule/' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>CWC Schedules</span>
             </a>
           </li>
           <li>
-            <a href="components-cards.html">
+            <a href="/assets/" class="{% if request.path == '/components-cards.html' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>Asset</span>
             </a>
           </li>
           <li>
-            <a href="components-carousel.html">
+            <a href="/pc_reports/" class="{% if request.path == '/components-carousel.html' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>PC Daily reporting</span>
             </a>
           </li>
-          
         </ul>
-      </li><!-- `End Components Nav -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-pc" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Project Coordinatpor</span><i class="bi bi-chevron-down ms-auto"></i>
+      </li><!-- End Components Nav -->
+      
+      <!-- <li class="nav-item">
+        <a class="nav-link {% if 'components-pc' in request.path %}active{% else %}collapsed{% endif %}" data-bs-target="#components-pc" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Project Coordinator</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="components-pc" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-
-          
+        <ul id="components-pc" class="nav-content collapse {% if 'components-pc' in request.path %}show{% endif %}" data-bs-parent="#sidebar-nav">
           <li>
-            <a href="components-carousel.html">
+            <a href="components-carousel.html" class="{% if request.path == '/components-carousel.html' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>PC Daily reporting</span>
             </a>
           </li>
-          
         </ul>
-      </li>
-
-
+      </li> -->
     </ul>
-
   </aside><!-- End Sidebar-->
 
   {% block body %}
   {% endblock %}
-
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
@@ -263,14 +235,69 @@
   <script src="/static/portal/assets/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="/static/portal/assets/vendor/tinymce/tinymce.min.js"></script>
   <script src="/static/portal/assets/vendor/php-email-form/validate.js"></script>
-
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
   <!-- Template Main JS File -->
   <script src="/static/portal/assets/js/main.js"></script>
 
-  {% comment %} {% block js %}
-  {% endblock %} {% endcomment %}
-</body>
+  <!-- Additional DataTables Libraries -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Ensure proper active state for mobile view
+    $(document).ready(function() {
+      // Handle sidebar toggle for mobile
+      // $('.toggle-sidebar-btn').click(function() {
+      //   $('body').toggleClass('toggle-sidebar');
+      // });
+
+      // Close sidebar when clicking outside on mobile
+      // $(document).click(function(event) {
+      //   if ($(window).width() <= 992) {
+      //     if (!$(event.target).closest('.sidebar, .toggle-sidebar-btn').length) {
+      //       $('body').removeClass('toggle-sidebar');
+      //     }
+      //   }
+      // });
+
+      // Maintain active state after page reload
+      const currentPath = window.location.pathname;
+      $('.sidebar-nav a').each(function() {
+        if ($(this).attr('href') === currentPath) {
+          $(this).addClass('active');
+          $(this).closest('.nav-content').addClass('show');
+          $(this).closest('.nav-item').find('> a').removeClass('collapsed').addClass('active');
+        }
+      });
+
+      // Back to top button
+      $(window).scroll(function() {
+        if ($(this).scrollTop() > 100) {
+          $('.back-to-top').fadeIn('slow');
+        } else {
+          $('.back-to-top').fadeOut('slow');
+        }
+      });
+      
+      $('.back-to-top').click(function() {
+        $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
+        return false;
+      });
+    });
+  </script>
+</body>
 </html>

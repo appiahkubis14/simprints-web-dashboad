@@ -4,152 +4,484 @@
 {% block body %}
 
 <style>
-  tr.group,
-  tr.group:hover {
-    background-color: rgba(0, 0, 0, 0.1) !important;
+  .schedule-card {
+    transition: all 0.3s ease;
   }
-
-  :root.dark tr.group,
-  :root.dark tr.group:hover {
-    background-color: rgba(0, 0, 0, 0.75) !important;
+  .schedule-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
   }
-
-  .highcharts-credits {
-    display: none !important;
+  .badge-cwc-type {
+    background-color: #6c757d;
   }
-
-  tr.selected {
-  background-color: #780e04 !important;
-  cursor: pointer;
-}
+  .badge-cwc-category {
+    background-color: #0d6efd;
+  }
+  .action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
 </style>
+
 <main id="main" class="main">
+  <div class="pagetitle">
+    <h1>CWC Schedule Management</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item">Reports</li>
+        <li class="breadcrumb-item active">CWC Schedule</li>
+      </ol>
+    </nav>
+  </div>
 
-
-    <div class="pagetitle">
-      <h1>Reports</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item">Report</li>
-          <li class="breadcrumb-item active">CWC Schedule</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">CWC Schedule</h5>
-            <div class="row">
-                <a href="/admin/portal/healthworkerstbl/add/"> <button type="button" class="btn btn-success" style="width:18%;margin-left:80%">Add CWC Schedule + </button></a>
-
-             </div> 
-             <div class="row">
-               
-                
-                <div class="col-lg-3 ">
-                    <label for="inputDate" class=" col-form-label">Start Date</label>
-                    <div class="col-sm-10">
-                      <input type="date" class="form-control">
-                    </div>
-                  </div>
-
-                  <div class="col-lg-3 ">
-                    <label for="inputDate" class=" col-form-label">End Date</label>
-                    <div class="col-sm-10" >
-                      <input type="date" class="form-control">
-                    </div>
-                  </div>
-
-                  <div class="col-lg-3">
-                   
-                    <div class="col-sm-10" style="margin-top: 37px;">
-                      <button type="submit" class="btn btn-primary">Filter</button>
-                    </div>
-                  </div>
-
-             </div>
-             <br>
-              <!-- Table with stripped rows -->
-              <table class="" id="example">
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title">CWC Schedules</h5>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+              <i class="bi bi-plus-circle"></i> Add New Schedule
+            </button>
+          </div>
+          
+          <div class="card-body">
+            <!-- Filter Section -->
+            <div class="row mb-3 g-3">
+              <div class="col-md-3">
+                <!-- <label for="facilityFilter" class="form-label">Facility</label> -->
+                <select id="facilityFilter" class="form-select">
+                  <option value="">All Facilities</option>
+                  {% for facility in health_facilities %}
+                  <option value="{{ facility.id }}">{{ facility.facility_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <!-- <label for="typeFilter" class="form-label">CWC Type</label> -->
+                <select id="typeFilter" class="form-select">
+                  <option value="">All Types</option>
+                  {% for type_id, type_name in cwc_types %}
+                  <option value="{{ type_id }}">{{ type_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="dateFromFilter" class="form-label">From Date</label>
+                <input type="date" class="form-control" id="dateFromFilter">
+              </div>
+              <div class="col-md-3">
+                <label for="dateToFilter" class="form-label">To Date</label>
+                <input type="date" class="form-control" id="dateToFilter">
+              </div>
+            </div>
+            
+            <!-- Schedule List -->
+            <div class="table-responsive">
+              <table id="schedulesTable" class="table table-hover" style="width:100%">
                 <thead>
                   <tr>
-                    
-                    <th>Facility Name</th>
-                    <th>CWC Type</th>
-                    <th>CWC Category</th>
+                    <th>ID</th>
+                    <th>Facility</th>
+                    <th>Type</th>
+                    <th>Category</th>
                     <th>Date</th>
-                   
-                   
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                    {% for aa in cwc %}
-                  <tr>
-                    <td>{{aa.healthFacilitiesTbl_foreignkey | title}}</td>
-                    <td>{{aa.cwc_type| title}}</td>
-                    <td>{{aa.cwc_category | title}}</td>
-                    <td>{{aa.date| title}}</td>
-                    
-                    
-                  </tr>
-                  {% endfor %}
-            
+                  <!-- Data will be loaded via AJAX -->
                 </tbody>
               </table>
-              <!-- End Table with stripped rows -->
-
             </div>
           </div>
-
         </div>
       </div>
-    </section>
+    </div>
+  </section>
+</main>
 
-  </main><!-- End #main -->
+<!-- Add Schedule Modal -->
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New CWC Schedule</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="addScheduleForm">
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="facility" class="form-label">Health Facility *</label>
+            <select class="form-select" id="facility" name="facility" required>
+              <option value="">Select Facility</option>
+              {% for facility in health_facilities %}
+              <option value="{{ facility.id }}">{{ facility.facility_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="cwcType" class="form-label">CWC Type *</label>
+            <select class="form-select" id="cwcType" name="cwc_type" required>
+              <option value="">Select Type</option>
+              {% for type_id, type_name in cwc_types %}
+              <option value="{{ type_id }}">{{ type_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="cwcCategory" class="form-label">CWC Category *</label>
+            <select class="form-select" id="cwcCategory" name="cwc_category" required>
+              <option value="">Select Category</option>
+              {% for category_id, category_name in cwc_categories %}
+              <option value="{{ category_id }}">{{ category_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="scheduleDate" class="form-label">Date *</label>
+            <input type="date" class="form-control" id="scheduleDate" name="date" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
-  <script>
-    var groupColumn = 3;
-   var table = $("#example").DataTable({
-     columnDefs: [{ visible: false, targets: groupColumn }],
-      responsive: true,
+<!-- Edit Schedule Modal -->
+<div class="modal fade" id="editScheduleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit CWC Schedule</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editScheduleForm">
+        <div class="modal-body">
+          {% csrf_token %}
+          <input type="hidden" id="editScheduleId" name="id">
+          <div class="mb-3">
+            <label for="editFacility" class="form-label">Health Facility *</label>
+            <select class="form-select" id="editFacility" name="facility" required>
+              <option value="">Select Facility</option>
+              {% for facility in health_facilities %}
+              <option value="{{ facility.id }}">{{ facility.facility_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editCwcType" class="form-label">CWC Type *</label>
+            <select class="form-select" id="editCwcType" name="cwc_type" required>
+              <option value="">Select Type</option>
+              {% for type_id, type_name in cwc_types %}
+              <option value="{{ type_id }}">{{ type_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editCwcCategory" class="form-label">CWC Category *</label>
+            <select class="form-select" id="editCwcCategory" name="cwc_category" required>
+              <option value="">Select Category</option>
+              {% for category_id, category_name in cwc_categories %}
+              <option value="{{ category_id }}">{{ category_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editScheduleDate" class="form-label">Date *</label>
+            <input type="date" class="form-control" id="editScheduleDate" name="date" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this CWC schedule? This action cannot be undone.</p>
+        <input type="hidden" id="deleteScheduleId">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  // Initialize DataTable
+  const table = $('#schedulesTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: "/cwc_schedule/data/",
+      type: "GET",
+      data: function(d) {
+        d.facility = $('#facilityFilter').val();
+        d.cwc_type = $('#typeFilter').val();
+        d.start_date = $('#dateFromFilter').val();
+        d.end_date = $('#dateToFilter').val();
+      }
+    },
+    columns: [
+      { data: "id", name: "id" },
+      { data: "facility_name", name: "facility_name" },
+      { 
+        data: "cwc_type", 
+        name: "cwc_type",
+        render: function(data) {
+          return `<span class="badge badge-cwc-type">${data}</span>`;
+        }
+      },
+      { 
+        data: "cwc_category", 
+        name: "cwc_category",
+        render: function(data) {
+          return `<span class="badge badge-cwc-category">${data}</span>`;
+        }
+      },
+      { 
+        data: "date", 
+        name: "date",
+        render: function(data) {
+          return new Date(data).toLocaleDateString();
+        }
+      },
+      { 
+        data: "id",
+        name: "actions",
+        orderable: false,
+        searchable: false,
+        render: function(data) {
+          return `
+            <div class="action-buttons">
+              <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${data}">
+                <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${data}">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
+          `;
+        }
+      }
+    ],
+    order: [[3, 'desc']], // Sort by date descending by default
+    responsive: true
+  });
+
+  // Apply filters when they change
+  $('#facilityFilter, #typeFilter, #dateFromFilter, #dateToFilter').change(function() {
+    table.ajax.reload();
+  });
+
+  // Handle add schedule form submission
+  $('#addScheduleForm').submit(function(e) {
+    e.preventDefault();
+    const formData = $(this).serialize();
     
-   
-     order: [[groupColumn, "asc"]],
-     displayLength: 16,
-     drawCallback: function (settings) {
-       var api = this.api();
-       var rows = api.rows({ page: "current" }).nodes();
-       var last = null;
+    $.ajax({
+      url: "/add_cwc_schedule/",
+      type: "POST",
+      data: formData,
+      beforeSend: function() {
+        $('#addScheduleForm button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+      },
+      success: function(response) {
+        if (response.success) {
+          $('#addScheduleModal').modal('hide');
+          $('#addScheduleForm')[0].reset();
+          table.ajax.reload();
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Schedule added successfully!',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'Failed to add schedule'
+          });
+        }
+      },
+      error: function(xhr) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while adding the schedule'
+        });
+      },
+      complete: function() {
+        $('#addScheduleForm button[type="submit"]').prop('disabled', false).text('Save Schedule');
+      }
+    });
+  });
 
-       api
-         .column(groupColumn, { page: "current" })
-         .data()
-         .each(function (group, i) {
-           if (last !== group) {
-             $(rows)
-               .eq(i)
-               .before(
-                 '<tr class="group"><td colspan="5">' + group + "</td></tr>"
-               );
+  // Handle edit button click
+  $(document).on('click', '.edit-btn', function() {
+    const scheduleId = $(this).data('id');
+    
+    $.ajax({
+      url: `/get_cwc_schedule/${scheduleId}/`,
+      type: "GET",
+      beforeSend: function() {
+        Swal.fire({
+          title: 'Loading...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+      },
+      success: function(response) {
+        Swal.close();
+        $('#editScheduleId').val(response.id);
+        $('#editFacility').val(response.facility_id);
+        $('#editCwcType').val(response.cwc_type);
+        $('#editCwcCategory').val(response.cwc_category);
+        $('#editScheduleDate').val(response.date.split('T')[0]);
+        $('#editScheduleModal').modal('show');
+      },
+      error: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load schedule data'
+        });
+      }
+    });
+  });
 
-             last = group;
-           }
-         });
-     },
-   });
+  // Handle edit form submission
+  $('#editScheduleForm').submit(function(e) {
+    e.preventDefault();
+    const formData = $(this).serialize();
+    
+    $.ajax({
+      url: "/edit_cwc_schedule/",
+      type: "POST",
+      data: formData,
+      beforeSend: function() {
+        $('#editScheduleForm button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...');
+      },
+      success: function(response) {
+        if (response.success) {
+          $('#editScheduleModal').modal('hide');
+          table.ajax.reload();
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Schedule updated successfully!',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'Failed to update schedule'
+          });
+        }
+      },
+      error: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while updating the schedule'
+        });
+      },
+      complete: function() {
+        $('#editScheduleForm button[type="submit"]').prop('disabled', false).text('Update Schedule');
+      }
+    });
+  });
 
+  // Handle delete button click
+  $(document).on('click', '.delete-btn', function() {
+    const scheduleId = $(this).data('id');
+    
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteSchedule(scheduleId);
+      }
+    });
+  });
 
-
-
-   
-  </script>
-
+  // Delete schedule function
+  function deleteSchedule(scheduleId) {
+    Swal.fire({
+      title: 'Deleting...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+    
+    $.ajax({
+      url: "/delete_cwc_schedule/",
+      type: "POST",
+      data: {
+        id: scheduleId,
+        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+      },
+      success: function(response) {
+        if (response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Schedule deleted successfully!',
+            timer: 3000,
+            showConfirmButton: false
+          });
+          table.ajax.reload();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'Failed to delete schedule'
+          });
+        }
+      },
+      error: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while deleting the schedule'
+        });
+      }
+    });
+  }
+});
+</script>
 {% endblock %}
-
-
-

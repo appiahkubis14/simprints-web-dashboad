@@ -245,3 +245,55 @@ admin.site.register(Districts, DistrictsAdmin)
 
 
 # admin.site.register(Region,)
+
+
+from django.contrib import admin
+from .models import pcreportTbl
+from django.contrib.gis.db import models
+from mapwidgets.widgets import GoogleMapPointFieldWidget  # Optional - for better map widget
+
+class pcreportTblAdmin(admin.ModelAdmin):
+    # List display fields
+    list_display = ('name_of_pc', 'reporting_date', 'district', 'hf_name', 'new_registrants')
+    
+    # Search fields
+    search_fields = ('name_of_pc', 'district', 'hf_name')
+    
+    # Filter options
+    list_filter = ('reporting_date', 'district')
+    
+    # Fields to display in the edit form
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name_of_pc', 'reporting_date', 'district', 'hf_name')
+        }),
+        ('Location Information', {
+            'fields': ('hf_coodinates_lat', 'hf_coodinates_lng')
+        }),
+        ('Equipment Status', {
+            'fields': ('tablets_functional', 'scanners_functional')
+        }),
+        ('Feedback', {
+            'fields': ('hw_concern_about_etracker', 'hw_concern_about_biometrics', 
+                       'clients_have_issues', 'positive_feedback', 'hw_positive_feedback',
+                       'feedback_comment', 'recommendation')
+        }),
+        ('System Information', {
+            'fields': ('SubmissionDate', 'uid'),
+            'classes': ('collapse',)  # Makes this section collapsible
+        }),
+    )
+    
+    # If you want to use a map widget for coordinates (requires django-map-widgets)
+    formfield_overrides = {
+        models.PointField: {"widget": GoogleMapPointFieldWidget}
+    }
+    
+    # Date hierarchy for easy navigation
+    date_hierarchy = 'reporting_date'
+    
+    # Set default ordering
+    ordering = ('-reporting_date',)
+
+# Register the model with the admin site
+admin.site.register(pcreportTbl, pcreportTblAdmin)
